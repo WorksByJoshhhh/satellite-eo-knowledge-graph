@@ -1,0 +1,156 @@
+erDiagram
+    SATELLITE ||--o{ SENSOR : "CARRIES"
+    SENSOR ||--o{ IMAGE_FRAME : "CAPTURED_BY"
+    LOCATION ||--o{ IMAGE_FRAME : "LOCATED_AT"
+    RIVER_BASIN |o--o{ LOCATION : "BELONGS_TO (optional)"
+    IMAGE_FRAME ||--o{ DETECTED_OBJECT : "DETECTED_IN"
+    OBJECT_TYPE ||--o{ DETECTED_OBJECT : "HAS_TYPE"
+    DETECTION_MODEL ||--o{ DETECTED_OBJECT : "DETECTED_BY"
+    IMAGE_FRAME ||--o{ SPECTRAL_INDEX : "HAS_INDEX"
+    DETECTED_OBJECT ||--o{ OBJECT_CHANGE : "PREVIOUS_OF"
+    DETECTED_OBJECT ||--o{ OBJECT_CHANGE : "CURRENT_OF (EVOLVED_FROM)"
+    OBJECT_CHANGE ||--o| ALERT : "TRIGGERS"
+    APP_USER |o--o{ ALERT : "ASSIGNED_TO"
+    APP_USER |o--o{ QUERY_LOG : "ASKS"
+    QUERY_LOG ||--o{ QUERY_EVIDENCE : "PROVIDES_EVIDENCE"
+    DETECTED_OBJECT ||--o{ QUERY_EVIDENCE : "USED_AS_EVIDENCE"
+
+    SATELLITE {
+        number satellite_id PK
+        string satellite_name UK
+        string operator_name
+        date launch_date
+        string orbit_type
+        string sat_status
+        number revisit_days
+    }
+    SENSOR {
+        number sensor_id PK
+        number satellite_id FK
+        string sensor_name
+        string sensor_type
+        number spatial_resolution_m
+        number num_bands
+    }
+    RIVER_BASIN {
+        number basin_id PK
+        string basin_name UK
+        string basin_code UK
+        number river_ref_lat
+        number river_ref_lon
+        number area_sq_km
+        string basin_description
+    }
+    LOCATION {
+        number location_id PK
+        number basin_id FK "nullable"
+        string location_name UK
+        string country
+        number latitude
+        number longitude
+        string region_type
+    }
+    IMAGE_FRAME {
+        number image_id PK
+        number sensor_id FK
+        number location_id FK
+        timestamp capture_time
+        number cloud_cover "CHECK 0-100"
+        number sun_elevation "CHECK 0-90"
+        string file_path UK
+        clob image_embedding "derived, JSON"
+        timestamp image_created_at
+    }
+    OBJECT_TYPE {
+        number object_type_id PK
+        string type_name UK
+        string category
+        string object_type_description
+    }
+    DETECTION_MODEL {
+        number model_id PK
+        string model_name
+        string model_version
+        string architecture
+        string trained_on
+        date released_date
+    }
+    DETECTED_OBJECT {
+        number object_id PK
+        number image_id FK
+        number object_type_id FK
+        number model_id FK
+        number confidence_score "derived, CHECK 0-1"
+        number bbox_min_lat "bbox composite"
+        number bbox_min_lon
+        number bbox_max_lat
+        number bbox_max_lon
+        number area_sq_m "derived"
+        clob object_embedding "derived, JSON"
+        clob attributes_json "composite/multi-valued"
+        timestamp object_created_at
+    }
+    OBJECT_CHANGE {
+        number change_id PK
+        number prev_object_id FK
+        number curr_object_id FK
+        string change_type
+        number change_pct "derived"
+        number time_delta_days "derived"
+        number rate_pct_per_month "derived"
+        timestamp computed_at
+    }
+    SPECTRAL_INDEX {
+        number index_id PK
+        number image_id FK
+        string index_name
+        number mean_value
+        number min_value
+        number max_value
+    }
+    APP_USER {
+        number user_id PK
+        string full_name
+        string email UK
+        string user_role
+        timestamp user_created_at
+    }
+    QUERY_LOG {
+        number query_id PK
+        number user_id FK "nullable"
+        string query_text
+        clob query_embedding "derived"
+        timestamp submitted_at
+        string response_text
+        clob retrieval_weights_json "composite alpha/beta/gamma"
+        number aggregated_confidence "derived"
+    }
+    QUERY_EVIDENCE {
+        number evidence_id PK
+        number query_id FK
+        number object_id FK
+        number semantic_score "derived"
+        number spatial_score "derived"
+        number temporal_score "derived"
+        number retrieval_score "derived"
+        number rank_position
+    }
+    ALERT {
+        number alert_id PK
+        number change_id FK "unique"
+        number assigned_user_id FK "nullable"
+        string severity
+        string alert_status
+        timestamp raised_at
+        timestamp resolved_at
+    }
+    AUDIT_LOG {
+        number audit_id PK
+        string table_name
+        string operation
+        number record_id
+        string changed_by
+        timestamp changed_at
+        string old_value
+        string new_value
+    }

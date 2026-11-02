@@ -1,0 +1,58 @@
+ROW COUNTS (for DA2 self-check)
+  satellite        5
+  sensor           6
+  river_basin      5
+  location         12
+  object_type      8
+  detection_model  3
+  app_user         4
+  image_frame      60
+  detected_object  247
+  spectral_index   120
+  query_log        4
+  query_evidence   20
+  object_change (after pkg_eo.compute_changes)  36
+  alert (after pkg_eo.raise_alerts, defaults)   4
+
+DEFORESTATION changes (change_pct >= 10):
+  Manaus Forest Edge       -> 2026-08-27  loss  14.30%  36d  11.92%/month  conf 0.553/0.647  cloud 44.6/27.9
+  Manaus Forest Edge       -> 2026-09-29  loss  17.77%  33d  16.15%/month  conf 0.647/0.751  cloud 27.9/25.5
+  Kisangani Rainforest     -> 2026-07-22  loss  10.78%  34d   9.51%/month  conf 0.771/0.909  cloud 45.0/50.2
+  Kisangani Rainforest     -> 2026-08-27  loss  14.48%  36d  12.07%/month  conf 0.909/0.725  cloud 50.2/19.5
+  Kisangani Rainforest     -> 2026-09-29  loss  17.70%  33d  16.09%/month  conf 0.725/0.775  cloud 19.5/8.1
+  Tonle Sap Fringe         -> 2026-07-22  loss  10.66%  34d   9.41%/month  conf 0.724/0.834  cloud 24.4/3.7
+  Tonle Sap Fringe         -> 2026-08-27  loss  13.91%  36d  11.59%/month  conf 0.834/0.733  cloud 3.7/33.2
+  Tonle Sap Fringe         -> 2026-09-29  loss  17.41%  33d  15.83%/month  conf 0.733/0.768  cloud 33.2/7.3
+  Bhadrachalam Forest      -> 2026-08-27  loss  13.50%  36d  11.25%/month  conf 0.81/0.578  cloud 18.9/45.0
+  Bhadrachalam Forest      -> 2026-09-29  loss  17.76%  33d  16.15%/month  conf 0.578/0.853  cloud 45.0/13.2
+
+ALERTS expected (conf>=0.7 both, cloud<=40 both, loss>=10):
+  Kisangani Rainforest     -> 2026-09-29  HIGH  loss 17.7%
+  Tonle Sap Fringe         -> 2026-07-22  MEDIUM  loss 10.66%
+  Tonle Sap Fringe         -> 2026-08-27  MEDIUM  loss 13.91%
+  Tonle Sap Fringe         -> 2026-09-29  HIGH  loss 17.41%
+
+Q3 DEFORESTATION within 300 km of a basin river reference point (flagship query):
+  Manaus Forest Edge       2026-08-27  loss 14.3%  dist 65 km
+  Manaus Forest Edge       2026-09-29  loss 17.77%  dist 65 km
+  Kisangani Rainforest     2026-07-22  loss 10.78%  dist 38 km
+  Kisangani Rainforest     2026-08-27  loss 14.48%  dist 38 km
+  Kisangani Rainforest     2026-09-29  loss 17.7%  dist 38 km
+  Tonle Sap Fringe         2026-07-22  loss 10.66%  dist 174 km
+  Tonle Sap Fringe         2026-08-27  loss 13.91%  dist 174 km
+  Tonle Sap Fringe         2026-09-29  loss 17.41%  dist 174 km
+  Bhadrachalam Forest      2026-08-27  loss 13.5%  dist 123 km
+  Bhadrachalam Forest      2026-09-29  loss 17.76%  dist 123 km
+
+Expected aggregated_confidence per query (pkg_eo.fn_query_confidence):
+  query 1: 0.6121   (Find images showing rapid deforestation near river basins in Q3)
+  query 2: 0.6655   (Show stable intact forest along the Danube floodplain)
+  query 3: 0.618   (Locate vessel activity at major ports)
+  query 4: 0.6006   (Detect bare soil expansion in recent months)
+
+Pre-seeded top evidence for query 1:
+  rank 1  object   41  Tree Coverage  Kisangani Rainforest   2026-09-29  score 0.9484
+  rank 2  object   39  Tree Coverage  Kisangani Rainforest   2026-08-27  score 0.9287
+  rank 3  object    9  Tree Coverage  Manaus Forest Edge     2026-09-29  score 0.9159
+  rank 4  object    7  Tree Coverage  Manaus Forest Edge     2026-08-27  score 0.8976
+  rank 5  object  136  Tree Coverage  Bhadrachalam Forest    2026-09-29  score 0.8619

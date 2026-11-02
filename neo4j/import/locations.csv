@@ -1,0 +1,13 @@
+location_id,basin_id,name,country,lat,lon,region_type
+1,1,Manaus Forest Edge,Brazil,-2.6,-60.3,FOREST
+2,1,Rondonia Frontier,Brazil,-8.76,-63.9,FOREST
+3,2,Kisangani Rainforest,DR Congo,0.8,25.0,FOREST
+4,2,Mbandaka Wetland,DR Congo,0.05,18.26,WETLAND
+5,3,Tonle Sap Fringe,Cambodia,12.9,104.1,FOREST
+6,3,Kratie Riverbank,Cambodia,12.48,106.02,FOREST
+7,4,Rajahmundry Delta,India,16.95,82.2,AGRICULTURE
+8,4,Bhadrachalam Forest,India,17.67,80.88,FOREST
+9,5,Belgrade Floodplain,Serbia,44.9,20.4,FLOODPLAIN
+10,,Chennai Coast,India,13.08,80.29,COASTAL
+11,,Rotterdam Port,Netherlands,51.95,4.14,PORT
+12,,Dubai Marina,UAE,25.08,55.14,URBAN

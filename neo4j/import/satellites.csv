@@ -1,0 +1,6 @@
+satellite_id,name,operator,launch_date,orbit_type,status,revisit_days
+1,Sentinel-2A,ESA/Copernicus,2015-06-23,SUN-SYNCHRONOUS,ACTIVE,10
+2,Sentinel-2B,ESA/Copernicus,2017-03-07,SUN-SYNCHRONOUS,ACTIVE,10
+3,Landsat 8,NASA/USGS,2013-02-11,SUN-SYNCHRONOUS,ACTIVE,16
+4,Landsat 9,NASA/USGS,2021-09-27,SUN-SYNCHRONOUS,ACTIVE,16
+5,Sentinel-1A,ESA/Copernicus,2014-04-03,SUN-SYNCHRONOUS,ACTIVE,12

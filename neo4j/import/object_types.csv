@@ -1,0 +1,9 @@
+object_type_id,type_name,category
+1,Tree Coverage,VEGETATION
+2,Building,URBAN
+3,Vessel,MARITIME
+4,Road Network,INFRASTRUCTURE
+5,Water Body,HYDROLOGY
+6,Cropland,AGRICULTURE
+7,Bare Soil,LAND_COVER
+8,Wildfire Scar,DISTURBANCE

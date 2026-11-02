@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Add detection · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Add a detected object</h1>
+<p class="sub">Saved through the PL/SQL procedure <span class="mono">pkg_eo.add_detection</span> (SAVEPOINT + rollback on error). Inputs are validated in the app, then again by the database constraints.</p>
+<div class="panel" style="max-width:820px">
+  <form method="post" novalidate>
+    <div class="form-grid">
+      <div class="field full"><label>Image</label>
+        <select name="image_id" id="image_id"><option value="">Choose an image…</option>
+          {% for i in images %}<option value="{{ i.image_id }}" data-lat="{{ i.latitude }}" data-lon="{{ i.longitude }}"
+            {{ 'selected' if (form.image_id or request.args.image_id)|string == i.image_id|string }}>#{{ i.image_id }} · {{ i.location_name }} · {{ i.capture_time|dt }}</option>{% endfor %}
+        </select></div>
+      <div class="field"><label>Object type</label>
+        <select name="type_name"><option value="">Choose…</option>
+          {% for t in types %}<option {{ 'selected' if form.type_name == t.type_name }}>{{ t.type_name }}</option>{% endfor %}</select></div>
+      <div class="field"><label>Detection model</label>
+        <select name="model_id"><option value="">Choose…</option>
+          {% for m in models %}<option value="{{ m.model_id }}" {{ 'selected' if form.model_id|string == m.model_id|string }}>{{ m.model_name }} {{ m.model_version }}</option>{% endfor %}</select></div>
+      <div class="field"><label>Confidence (0–1)</label><input name="confidence" value="{{ form.confidence }}"></div>
+      <div class="field"><label>Area (m²)</label><input name="area" value="{{ form.area }}"></div>
+      <div class="field"><label>Centre latitude</label><input name="lat" id="lat" value="{{ form.lat }}"></div>
+      <div class="field"><label>Centre longitude</label><input name="lon" id="lon" value="{{ form.lon }}"></div>
+    </div>
+    <button class="btn">Save detection</button>
+    <span class="hint">Try an invalid value (e.g. confidence 1.5, a negative area, or a second Tree Coverage on the same image) to see validation.</span>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+var sel = document.getElementById('image_id');
+function fill() { var o = sel.options[sel.selectedIndex]; if (o && o.dataset.lat && !document.getElementById('lat').value) {
+  document.getElementById('lat').value = o.dataset.lat; document.getElementById('lon').value = o.dataset.lon; } }
+sel.addEventListener('change', function () { document.getElementById('lat').value = ''; document.getElementById('lon').value = ''; fill(); });
+fill();
+</script>
+{% endblock %}

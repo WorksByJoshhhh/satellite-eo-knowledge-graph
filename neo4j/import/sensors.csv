@@ -1,0 +1,7 @@
+sensor_id,satellite_id,name,sensor_type,resolution_m,num_bands
+1,1,MSI,OPTICAL,10,13
+2,2,MSI,OPTICAL,10,13
+3,3,OLI,OPTICAL,30,9
+4,4,OLI-2,OPTICAL,30,9
+5,3,TIRS,THERMAL,100,2
+6,5,C-SAR,SAR,5,1

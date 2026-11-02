@@ -1,0 +1,6 @@
+basin_id,name,code,river_ref_lat,river_ref_lon,area_sq_km
+1,Amazon Basin,AMZ,-3.119,-60.0217,6150000
+2,Congo Basin,CNG,0.5167,25.1833,3700000
+3,Mekong Basin,MKG,11.5564,104.9282,795000
+4,Godavari Basin,GDV,17.0005,81.804,312812
+5,Danube Basin,DNB,44.8176,20.4633,801093

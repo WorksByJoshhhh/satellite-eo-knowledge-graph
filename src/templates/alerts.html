@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Alerts · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Change analysis &amp; alerts</h1>
+<p class="sub">Builds the EVOLVED_FROM lineage (<span class="mono">pkg_eo.compute_changes</span>) and raises alerts only for trustworthy losses (<span class="mono">pkg_eo.raise_alerts</span>).</p>
+<div class="panel">
+  <form class="inline" method="post" action="{{ url_for('run_analysis') }}">
+    <div><label>Min loss %</label><input type="number" step="0.5" name="min_loss" value="10" style="width:110px"></div>
+    <div><label>Min detection confidence</label><input type="number" step="0.01" name="min_conf" value="0.7" style="width:110px"></div>
+    <div><label>Max cloud %</label><input type="number" step="1" name="max_cloud" value="40" style="width:110px"></div>
+    <div><button class="btn">Run change analysis</button></div>
+  </form>
+  {% if output %}<div class="output" style="margin-top:14px">{{ output|join('\n') }}</div>{% endif %}
+</div>
+<div class="panel scroll">
+  <table>
+    <tr><th>#</th><th>Severity</th><th>Location</th><th>Observed</th><th class="n">Loss</th><th>Status</th><th>Assignee</th><th>Raised / resolved</th><th>Update</th></tr>
+    {% for a in rows %}
+    <tr><td>{{ a.alert_id }}</td><td><span class="chip {{ a.severity }}">{{ a.severity }}</span></td>
+        <td><a href="{{ url_for('location_detail', location_id=a.location_id) }}">{{ a.location_name }}</a><div class="muted" style="font-size:12px">{{ a.basin_name }}</div></td>
+        <td>{{ a.curr_time|dt }}</td><td class="n">{{ a.change_pct|pct(2) }}</td>
+        <td><span class="chip {{ a.alert_status }}">{{ a.alert_status }}</span></td><td>{{ a.assignee or '—' }}</td>
+        <td class="muted" style="font-size:12px">{{ a.raised_at|dt('%d %b %H:%M') }}<br>{{ a.resolved_at|dt('%d %b %H:%M') if a.resolved_at else '' }}</td>
+        <td>
+          <form class="inline" method="post" action="{{ url_for('update_alert', alert_id=a.alert_id) }}" style="gap:6px">
+            <select name="alert_status">{% for s in statuses %}<option {{ 'selected' if s == a.alert_status }}>{{ s }}</option>{% endfor %}</select>
+            <select name="assigned_user_id"><option value="">Unassigned</option>
+              {% for u in users %}<option value="{{ u.user_id }}" {{ 'selected' if u.user_id == a.assigned_user_id }}>{{ u.full_name }}</option>{% endfor %}</select>
+            <button class="btn small">Save</button>
+          </form>
+        </td></tr>
+    {% else %}<tr><td colspan="9" class="muted">No alerts yet. Run the change analysis above.</td></tr>{% endfor %}
+  </table>
+  <p class="muted" style="font-size:13px">Setting status to RESOLVED stamps <span class="mono">resolved_at</span> automatically (trigger <span class="mono">trg_alert_resolve</span>).</p>
+</div>
+{% endblock %}

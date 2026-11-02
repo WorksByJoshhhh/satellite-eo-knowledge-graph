@@ -1,0 +1,4 @@
+model_id,name,version,architecture
+1,ForestNet,1.2,U-Net
+2,YOLO-EO,8.0,YOLOv8-OBB
+3,NDVI-Threshold,2.0,Rule-based

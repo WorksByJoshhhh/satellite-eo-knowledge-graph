@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="sub">Live view of the Earth-observation knowledge base. Latest capture: {{ stats.latest_capture|dt }}</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">{{ stats.images }}</div><div class="l">Images from {{ stats.satellites }} satellites</div></div>
+  <div class="kpi"><div class="v">{{ stats.objects }}</div><div class="l">Detected objects at {{ stats.locations }} locations</div></div>
+  <div class="kpi"><div class="v">{{ stats.deforestation_events }}</div><div class="l">Deforestation events ({{ stats.lineage_links }} lineage links)</div></div>
+  <div class="kpi"><div class="v" style="color:var(--accent)">{{ stats.open_alerts }}</div><div class="l">Open alerts</div></div>
+</div>
+
+<div class="grid g2">
+  <div class="panel">
+    <div class="spread"><h2>Forest loss by location</h2><a href="{{ url_for('locations') }}">All locations →</a></div>
+    <table>
+      <tr><th>Location</th><th>Basin</th><th class="n">Loss</th><th></th></tr>
+      {% for r in losses %}
+      <tr>
+        <td><a href="{{ url_for('location_detail', location_id=r.location_id) }}">{{ r.location_name }}</a></td>
+        <td class="muted">{{ r.basin_name or '—' }}</td>
+        <td class="n">{{ r.loss_pct|loss }}</td>
+        <td style="width:30%">{% if r.loss_pct is not none %}<div class="bar loss"><span style="width:{{ [[r.loss_pct * 2, 0]|max, 100]|min }}%"></span></div>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="panel">
+    <div class="spread"><h2>Open alerts</h2><a href="{{ url_for('alerts') }}">Manage →</a></div>
+    {% if alerts %}
+    <table>
+      <tr><th>Severity</th><th>Location</th><th class="n">Loss</th><th>Status</th></tr>
+      {% for a in alerts %}
+      <tr><td><span class="chip {{ a.severity }}">{{ a.severity }}</span></td>
+          <td>{{ a.location_name }}<div class="muted" style="font-size:12px">{{ a.curr_time|dt }}</div></td>
+          <td class="n">{{ a.change_pct|pct }}</td><td><span class="chip {{ a.alert_status }}">{{ a.alert_status }}</span></td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">No open alerts. Run the change analysis on the Alerts page.</p>{% endif %}
+  </div>
+</div>
+
+<div class="panel">
+  <div class="spread"><h2>Recent GraphRAG questions</h2><a class="btn small" href="{{ url_for('ask') }}">Ask a question</a></div>
+  <table>
+    <tr><th>#</th><th>Question</th><th>Asked by</th><th class="n">Evidence</th><th class="n">Confidence</th></tr>
+    {% for q in questions %}
+    <tr><td>{{ q.query_id }}</td><td><a href="{{ url_for('ask_result', query_id=q.query_id) }}">{{ q.query_text }}</a></td>
+        <td class="muted">{{ q.full_name or '—' }}</td><td class="n">{{ q.evidence }}</td>
+        <td class="n">{{ (q.aggregated_confidence * 100)|num(1) ~ '%' if q.aggregated_confidence is not none else '—' }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Ask (GraphRAG) · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Ask the knowledge graph</h1>
+<p class="sub">Hybrid retrieval: <b>retrieval score = α·semantic + β·spatial + γ·temporal</b>. The question and its evidence are stored in QUERY_LOG / QUERY_EVIDENCE, and the PL/SQL package computes an answer-level confidence.</p>
+<div class="grid g2">
+  <div class="panel">
+    <form method="post">
+      <div class="field"><label>Question</label><textarea name="question" maxlength="500">{{ form.question }}</textarea></div>
+      <div class="form-grid">
+        <div class="field full"><label>What should the evidence look like? (semantic concept)</label>
+          <select name="concept">{% for k, v in concepts.items() %}<option value="{{ k }}" {{ 'selected' if form.concept == k }}>{{ v }}</option>{% endfor %}</select>
+          <div class="hint">The query vector is the centroid of labelled examples of this concept already in the database.</div></div>
+        <div class="field"><label>α semantic</label><input type="number" step="0.05" name="alpha" value="{{ form.alpha }}"></div>
+        <div class="field"><label>β spatial (near a river)</label><input type="number" step="0.05" name="beta" value="{{ form.beta }}"></div>
+        <div class="field"><label>γ temporal (inside window)</label><input type="number" step="0.05" name="gamma" value="{{ form.gamma }}"></div>
+        <div class="field"><label>Results (3–10)</label><input type="number" name="top_k" value="{{ form.top_k }}"></div>
+        <div class="field"><label>Window from</label><input type="date" name="date_from" value="{{ form.date_from }}"></div>
+        <div class="field"><label>Window to</label><input type="date" name="date_to" value="{{ form.date_to }}"></div>
+        <div class="field full"><label>Asked by</label>
+          <select name="user_id"><option value="">Anonymous</option>{% for u in users %}<option value="{{ u.user_id }}" {{ 'selected' if form.user_id|string == u.user_id|string }}>{{ u.full_name }} ({{ u.user_role }})</option>{% endfor %}</select></div>
+      </div>
+      <button class="btn">Retrieve evidence</button>
+      <span class="hint">Weights are normalised to sum to 1.</span>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Previous questions</h2>
+    <table><tr><th>#</th><th>Question</th><th class="n">Confidence</th></tr>
+      {% for q in recent %}<tr><td>{{ q.query_id }}</td><td><a href="{{ url_for('ask_result', query_id=q.query_id) }}">{{ q.query_text }}</a></td>
+        <td class="n">{{ (q.aggregated_confidence * 100)|num(1) ~ '%' if q.aggregated_confidence is not none else '—' }}</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

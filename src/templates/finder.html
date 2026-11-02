@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Deforestation finder · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Deforestation finder</h1>
+<p class="sub">"Find rapid deforestation near river basins in a time window": joins the EVOLVED_FROM lineage, locations, basins and the PL/SQL distance function.</p>
+<div class="panel">
+  <form class="inline" method="get">
+    <div><label>From</label><input type="date" name="date_from" value="{{ p.date_from }}"></div>
+    <div><label>To</label><input type="date" name="date_to" value="{{ p.date_to }}"></div>
+    <div><label>Max km to river</label><input type="number" name="max_km" value="{{ p.max_km|int }}" style="width:120px"></div>
+    <div><label>Min loss between images (%)</label><input type="number" step="0.5" name="min_loss" value="{{ p.min_loss }}" style="width:120px"></div>
+    <div><button class="btn">Find</button></div>
+  </form>
+</div>
+<div class="grid g2">
+  <div class="panel"><div id="map" class="map"></div></div>
+  <div class="panel">
+    <h2>{{ rows|length }} event(s) found</h2>
+    <p class="muted">Ranked by rate of loss. <b>Trust</b> = lower detection confidence × clear-sky fraction of the two images, so cloudy or uncertain evidence ranks lower.</p>
+    <p class="muted">Locations: {{ rows|map(attribute='location_name')|unique|join(', ') or '—' }}</p>
+  </div>
+</div>
+<div class="panel scroll">
+  <table>
+    <tr><th>Location</th><th>Basin</th><th>Observed</th><th class="n">Loss</th><th class="n">%/month</th><th class="n">Days</th><th class="n">km to river</th><th class="n">Trust</th><th>Alert</th></tr>
+    {% for r in rows %}
+    <tr><td><a href="{{ url_for('location_detail', location_id=r.location_id) }}">{{ r.location_name }}</a></td>
+        <td class="muted">{{ r.basin_name }}</td><td>{{ r.curr_time|dt }}</td><td class="n">{{ r.change_pct|pct(2) }}</td>
+        <td class="n">{{ r.rate_pct_per_month|num(2) }}</td><td class="n">{{ r.time_delta_days }}</td><td class="n">{{ r.km_to_river|num }}</td>
+        <td class="n">{{ r.evidence_trust|num(3) }}</td><td>{{ ('#' ~ r.alert_id) if r.alert_id else '—' }}</td></tr>
+    {% else %}<tr><td colspan="9" class="muted">No events. If the lineage has not been built yet, run the change analysis on the Alerts page.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+window.MAP_POINTS = {{ points|tojson }}.map(function (p) {
+  return { lat: p.lat, lon: p.lon, r: 5 + p.loss / 2, label: '<b>' + p.name + '</b><br>' + p.date + ': ' + p.loss.toFixed(1) + '% loss' };
+});
+</script>
+{% include "_map.html" %}
+{% endblock %}

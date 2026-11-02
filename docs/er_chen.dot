@@ -1,0 +1,88 @@
+graph ER {
+  graph [layout=neato, overlap=false, splines=true, sep="+12", fontname="Helvetica", fontsize=22, labelloc=t, pad=0.5,
+         label="ER Diagram (Chen notation): Satellite Imagery Knowledge Graph, 15 entities"];
+  node  [fontname="Helvetica", fontsize=13, penwidth=1.6];
+  edge  [fontname="Helvetica", fontsize=13, penwidth=1.3];
+
+  // ---------- entities ----------
+  node [shape=box, style=filled, fillcolor="#e8f0fe"];
+  SATELLITE [pos="0,8!"]; LOCATION [pos="10,8!"]; RIVER_BASIN [pos="16,8!"];
+  IMAGE_FRAME [pos="5,4!"]; OBJECT_TYPE [pos="-3,0!"]; DETECTION_MODEL [pos="-3,-3!"];
+  DETECTED_OBJECT [pos="5,-1.5!"]; APP_USER [pos="16,-7!"]; QUERY_LOG [pos="16,-3!"];
+  AUDIT_LOG [pos="-3,-8!", fillcolor="#f1f5f9"];
+  // weak entities (double rectangle)
+  node [peripheries=2, fillcolor="#fff7e6"];
+  SENSOR [pos="0,4!"]; SPECTRAL_INDEX [pos="10,4!"];
+  // associative entities (relationship promoted to entity)
+  node [peripheries=1, fillcolor="#fde2e2", style="filled,rounded"];
+  OBJECT_CHANGE [pos="5,-5.5!", label="OBJECT_CHANGE\n(associative: EVOLVED_FROM)"];
+  QUERY_EVIDENCE [pos="11,-1.5!", label="QUERY_EVIDENCE\n(associative)"];
+  node [style=filled, fillcolor="#e8f0fe"];
+  ALERT [pos="11,-7!"];
+
+  // ---------- relationships ----------
+  node [shape=diamond, style=filled, fillcolor="#fef3c7", peripheries=1, fontsize=11, width=1.6, height=0.8];
+  CARRIES [pos="0,6!", peripheries=2];
+  CAPTURED_BY [pos="2.5,4!"];
+  LOCATED_AT [pos="7.5,6!"];
+  BELONGS_TO [pos="13,8!"];
+  HAS_INDEX [pos="7.5,4!", peripheries=2];
+  DETECTED_IN [pos="5,1.3!"];
+  HAS_TYPE [pos="1,0!"];
+  DETECTED_BY [pos="1,-3!"];
+  PREVIOUS [pos="3,-3.6!", label="EVOLVED_FROM\n(previous)"];
+  CURRENT [pos="7,-3.6!", label="EVOLVED_FROM\n(current)"];
+  USED_AS_EVIDENCE [pos="8,-1.5!"];
+  PROVIDES_EVIDENCE [pos="13.6,-1.5!"];
+  ASKS [pos="16,-5!"];
+  TRIGGERS [pos="8,-6.5!"];
+  ASSIGNED_TO [pos="13.5,-7!"];
+
+  // ---------- edges: label = cardinality; double line = total participation ----------
+  edge [color="black"];
+  SATELLITE -- CARRIES [label="1"];
+  CARRIES -- SENSOR [label="N", color="black:invis:black"];
+  SENSOR -- CAPTURED_BY [label="1"];
+  CAPTURED_BY -- IMAGE_FRAME [label="N", color="black:invis:black"];
+  LOCATION -- LOCATED_AT [label="1"];
+  LOCATED_AT -- IMAGE_FRAME [label="N", color="black:invis:black"];
+  RIVER_BASIN -- BELONGS_TO [label="1"];
+  BELONGS_TO -- LOCATION [label="N"];
+  IMAGE_FRAME -- HAS_INDEX [label="1"];
+  HAS_INDEX -- SPECTRAL_INDEX [label="N", color="black:invis:black"];
+  IMAGE_FRAME -- DETECTED_IN [label="1"];
+  DETECTED_IN -- DETECTED_OBJECT [label="N", color="black:invis:black"];
+  OBJECT_TYPE -- HAS_TYPE [label="1"];
+  HAS_TYPE -- DETECTED_OBJECT [label="N", color="black:invis:black"];
+  DETECTION_MODEL -- DETECTED_BY [label="1"];
+  DETECTED_BY -- DETECTED_OBJECT [label="N", color="black:invis:black"];
+  DETECTED_OBJECT -- PREVIOUS [label="1"];
+  PREVIOUS -- OBJECT_CHANGE [label="N", color="black:invis:black"];
+  DETECTED_OBJECT -- CURRENT [label="1"];
+  CURRENT -- OBJECT_CHANGE [label="N", color="black:invis:black"];
+  DETECTED_OBJECT -- USED_AS_EVIDENCE [label="1"];
+  USED_AS_EVIDENCE -- QUERY_EVIDENCE [label="N", color="black:invis:black"];
+  QUERY_LOG -- PROVIDES_EVIDENCE [label="1"];
+  PROVIDES_EVIDENCE -- QUERY_EVIDENCE [label="N", color="black:invis:black"];
+  APP_USER -- ASKS [label="1"];
+  ASKS -- QUERY_LOG [label="N"];
+  OBJECT_CHANGE -- TRIGGERS [label="1"];
+  TRIGGERS -- ALERT [label="1", color="black:invis:black"];
+  APP_USER -- ASSIGNED_TO [label="1"];
+  ASSIGNED_TO -- ALERT [label="N"];
+
+  // ---------- legend ----------
+  node [shape=plaintext, style="", fillcolor="", peripheries=1, fontsize=12];
+  legend [pos="-2.5,6.5!", label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" BGCOLOR="white">
+      <TR><TD ALIGN="LEFT"><B>Legend</B></TD></TR>
+      <TR><TD ALIGN="LEFT">Rectangle = strong entity</TD></TR>
+      <TR><TD ALIGN="LEFT">Double rectangle = weak entity</TD></TR>
+      <TR><TD ALIGN="LEFT">Rounded pink = associative entity</TD></TR>
+      <TR><TD ALIGN="LEFT">Diamond = relationship</TD></TR>
+      <TR><TD ALIGN="LEFT">Double diamond = identifying relationship</TD></TR>
+      <TR><TD ALIGN="LEFT">Double line = total participation</TD></TR>
+      <TR><TD ALIGN="LEFT">1 / N = cardinality</TD></TR>
+      <TR><TD ALIGN="LEFT">AUDIT_LOG: independent (filled by triggers)</TD></TR>
+    </TABLE>>];
+}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Audit log · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Audit log</h1>
+<p class="sub">Rows written automatically by database triggers (<span class="mono">trg_obj_audit</span>, <span class="mono">trg_alert_stmt_audit</span>). The application never writes here directly.</p>
+<div class="panel">
+  <form class="inline" method="get">
+    <div><label>Table</label><select name="table"><option value="">All</option>
+      {% for t in ['DETECTED_OBJECT', 'ALERT'] %}<option {{ 'selected' if table == t }}>{{ t }}</option>{% endfor %}</select></div>
+    <div><button class="btn">Filter</button></div>
+  </form>
+</div>
+<div class="panel scroll">
+  <table>
+    <tr><th>#</th><th>When</th><th>Table</th><th>Operation</th><th class="n">Record</th><th>By</th><th>Old value</th><th>New value</th></tr>
+    {% for r in rows %}
+    <tr><td>{{ r.audit_id }}</td><td>{{ r.changed_at|dt('%d %b %H:%M:%S') }}</td><td>{{ r.table_name }}</td><td><span class="chip">{{ r.operation }}</span></td>
+        <td class="n">{{ r.record_id or '—' }}</td><td class="muted">{{ r.changed_by }}</td><td class="mono">{{ r.old_value or '' }}</td><td class="mono">{{ r.new_value or '' }}</td></tr>
+    {% else %}<tr><td colspan="8" class="muted">No audit rows yet. Add a detection to create one.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Question {{ q.query_id }} · EO Knowledge Graph{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('ask') }}">← Ask another question</a></p>
+<h1>{{ q.query_text }}</h1>
+<p class="sub">Question #{{ q.query_id }} · {{ q.full_name or 'Anonymous' }} · {{ q.submitted_at|dt('%d %b %Y %H:%M') }}
+  · weights α={{ weights.alpha }}, β={{ weights.beta }}, γ={{ weights.gamma }}</p>
+<div class="grid g3">
+  <div class="panel">
+    <h2>Answer confidence</h2>
+    <div class="big" style="color:{{ '#15803d' if (q.aggregated_confidence or 0) >= 0.75 else ('#b45309' if (q.aggregated_confidence or 0) >= 0.5 else '#b91c1c') }}">
+      {{ (q.aggregated_confidence * 100)|num(1) ~ '%' if q.aggregated_confidence is not none else '—' }}</div>
+    <p class="muted">Retrieval-weighted mean of detection confidence × clear-sky fraction (<span class="mono">pkg_eo.fn_query_confidence</span>).</p>
+  </div>
+  <div class="panel" style="grid-column: span 2">
+    <h2>Response</h2>
+    <p>{{ q.response_text or '—' }}</p>
+    <p class="muted">Locations in evidence: {{ ev|map(attribute='location_name')|unique|join(', ') }}</p>
+    <div class="legend"><span><i style="background:#127a65"></i>semantic</span><span><i style="background:#2563eb"></i>spatial</span><span><i style="background:#d97706"></i>temporal</span></div>
+  </div>
+</div>
+<div class="grid g2">
+  <div class="panel"><div id="map" class="map"></div></div>
+  <div class="panel scroll">
+    <h2>Ranked evidence</h2>
+    <table>
+      <tr><th>#</th><th>Object</th><th>Where / when</th><th>Score mix</th><th class="n">Score</th></tr>
+      {% for e in ev %}
+      <tr><td>{{ e.rank_position }}</td>
+          <td>{{ e.type_name }} <span class="muted">#{{ e.object_id }}</span><div class="muted" style="font-size:12px">conf {{ e.confidence_score|num(3) }} · cloud {{ e.cloud_cover|pct }}</div></td>
+          <td><a href="{{ url_for('location_detail', location_id=e.location_id) }}">{{ e.location_name }}</a><div class="muted" style="font-size:12px">{{ e.capture_time|dt }} · <a href="{{ url_for('image_detail', image_id=e.image_id) }}">image {{ e.image_id }}</a></div></td>
+          <td><div class="scorebar">
+            <span class="s" style="width:{{ (weights.alpha * e.semantic_score * 100)|round(1) }}%"></span>
+            <span class="p" style="width:{{ (weights.beta * e.spatial_score * 100)|round(1) }}%"></span>
+            <span class="t" style="width:{{ (weights.gamma * e.temporal_score * 100)|round(1) }}%"></span></div>
+            <div class="muted mono" style="font-size:11px">{{ e.semantic_score|num(3) }} / {{ e.spatial_score|num(3) }} / {{ e.temporal_score|num(1) }}</div></td>
+          <td class="n"><b>{{ e.retrieval_score|num(4) }}</b></td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+window.MAP_POINTS = {{ points|tojson }}.map(function (p) {
+  return { lat: p.lat, lon: p.lon, color: '#127a65', label: '<b>#' + p.rank + ' ' + p.name + '</b><br>' + p.type };
+});
+</script>
+{% include "_map.html" %}
+{% endblock %}

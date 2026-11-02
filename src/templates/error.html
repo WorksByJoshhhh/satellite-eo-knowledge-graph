@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Error · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Something went wrong</h1>
+<p class="sub">The request could not be completed.</p>
+<div class="panel">
+  <p><strong>{{ message }}</strong></p>
+  {% if raw %}<details><summary class="muted">Technical details</summary><pre class="output">{{ raw }}</pre></details>{% endif %}
+  <p><a class="btn ghost" href="{{ url_for('dashboard') }}">Back to dashboard</a></p>
+</div>
+{% endblock %}

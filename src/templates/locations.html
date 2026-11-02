@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Locations · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Locations</h1>
+<p class="sub">Forest loss is computed by the PL/SQL function <span class="mono">fn_forest_loss_pct</span> over the whole capture period.</p>
+<div class="panel"><div id="map" class="map"></div></div>
+<div class="panel scroll">
+  <table>
+    <tr><th>Location</th><th>Country</th><th>Region</th><th>Basin</th><th class="n">Images</th><th class="n">Forest loss</th></tr>
+    {% for r in rows %}
+    <tr><td><a href="{{ url_for('location_detail', location_id=r.location_id) }}">{{ r.location_name }}</a></td>
+        <td>{{ r.country }}</td><td class="muted">{{ r.region_type }}</td><td class="muted">{{ r.basin_name or '—' }}</td>
+        <td class="n">{{ r.images }}</td><td class="n">{{ r.loss_pct|loss }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+window.MAP_POINTS = {{ points|tojson }}.map(function (p) {
+  return { lat: p.lat, lon: p.lon, color: p.loss === null ? '#2563eb' : (p.loss > 20 ? '#b91c1c' : '#d97706'),
+           label: '<b>' + p.name + '</b><br>' + (p.loss === null ? 'no tree data'
+                  : (p.loss < 0 ? (-p.loss).toFixed(1) + '% forest gain' : p.loss.toFixed(1) + '% forest loss')) };
+});
+</script>
+{% include "_map.html" %}
+{% endblock %}

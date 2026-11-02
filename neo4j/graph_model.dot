@@ -1,0 +1,29 @@
+digraph EOGraph {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=20, labelloc=t, pad=0.4, nodesep=0.6, ranksep=1.1,
+         label="Neo4j Graph Model - Satellite Imagery Knowledge Graph (10 node labels, 11 relationship types)"];
+  node  [shape=ellipse, style=filled, fontname="Helvetica", fontsize=13, penwidth=1.5, color="#33415c"];
+  edge  [fontname="Helvetica", fontsize=11, color="#4a5568", penwidth=1.4, arrowsize=0.8];
+
+  Satellite      [fillcolor="#dbeafe", label="Satellite\nsatellite_id, name,\noperator, orbit_type"];
+  Sensor         [fillcolor="#dbeafe", label="Sensor\nsensor_id, name,\nsensor_type, resolution_m"];
+  ImageFrame     [fillcolor="#bfdbfe", label="ImageFrame\nimage_id, capture_time,\ncloud_cover, ndvi_mean,\nembedding[8] (vector)"];
+  Location       [fillcolor="#dcfce7", label="Location\nlocation_id, name,\npoint (spatial), region_type"];
+  RiverBasin     [fillcolor="#dcfce7", label="RiverBasin\nbasin_id, name, code,\nriver_point (spatial)"];
+  DetectedObject [fillcolor="#ede9fe", label="DetectedObject\nobject_id, type_name,\nconfidence, area_sq_m,\nbbox_center, embedding[8]"];
+  ObjectType     [fillcolor="#f3e8ff", label="ObjectType\nobject_type_id,\ntype_name, category"];
+  DetectionModel [fillcolor="#f3e8ff", label="DetectionModel\nmodel_id, name,\nversion, architecture"];
+  QueryLog       [fillcolor="#fef3c7", label="QueryLog\nquery_id, text,\nalpha, beta, gamma,\nembedding[8]"];
+  AppUser        [fillcolor="#fef3c7", label="AppUser\nuser_id, full_name, role"];
+
+  Sensor         -> Satellite      [label="ONBOARD"];
+  ImageFrame     -> Satellite      [label="CAPTURED_BY"];
+  ImageFrame     -> Sensor         [label="USED_SENSOR"];
+  ImageFrame     -> Location       [label="LOCATED_AT"];
+  Location       -> RiverBasin     [label="BELONGS_TO (optional)"];
+  DetectedObject -> ImageFrame     [label="DETECTED_IN"];
+  DetectedObject -> ObjectType     [label="HAS_TYPE"];
+  DetectedObject -> DetectionModel [label="DETECTED_BY"];
+  DetectedObject -> DetectedObject [label="EVOLVED_FROM\n{change_type, change_pct,\ntime_delta_days, rate_pct_per_month}", color="#b91c1c", fontcolor="#b91c1c", penwidth=2.2];
+  QueryLog       -> DetectedObject [label="USED_AS_EVIDENCE\n{semantic, spatial, temporal,\nretrieval_score, rank}", color="#b45309", fontcolor="#b45309", penwidth=2.2];
+  QueryLog       -> AppUser        [label="ASKED_BY"];
+}

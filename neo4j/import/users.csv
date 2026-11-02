@@ -1,0 +1,5 @@
+user_id,full_name,email,role
+1,Aarav Menon,aarav.menon@eo-lab.example,ANALYST
+2,Priya Nair,priya.nair@eo-lab.example,ANALYST
+3,Dev Kapoor,dev.kapoor@eo-lab.example,ADMIN
+4,Sana Iqbal,sana.iqbal@eo-lab.example,VIEWER

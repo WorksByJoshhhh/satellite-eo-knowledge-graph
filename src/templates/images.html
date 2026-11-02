@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Images · EO Knowledge Graph{% endblock %}
+{% block content %}
+<h1>Image catalogue</h1>
+<p class="sub">Search satellite image frames by satellite, location, cloud cover and date.</p>
+<div class="panel">
+  <form class="inline" method="get">
+    <div><label>Satellite</label>
+      <select name="satellite"><option value="">Any</option>
+        {% for s in satellites %}<option {{ 'selected' if f.satellite == s.satellite_name }}>{{ s.satellite_name }}</option>{% endfor %}
+      </select></div>
+    <div><label>Location</label>
+      <select name="location"><option value="">Any</option>
+        {% for l in locations %}<option {{ 'selected' if f.location == l.location_name }}>{{ l.location_name }}</option>{% endfor %}
+      </select></div>
+    <div><label>Max cloud %</label><input type="number" name="max_cloud" step="0.1" value="{{ f.max_cloud or 100 }}" style="width:110px"></div>
+    <div><label>From</label><input type="date" name="date_from" value="{{ f.date_from or '' }}"></div>
+    <div><label>To</label><input type="date" name="date_to" value="{{ f.date_to or '' }}"></div>
+    <div><button class="btn">Search</button> <a class="btn ghost" href="{{ url_for('images') }}">Reset</a></div>
+  </form>
+</div>
+<div class="panel scroll">
+  <p class="muted">{{ rows|length }} image(s)</p>
+  <table>
+    <tr><th>ID</th><th>Captured</th><th>Satellite / sensor</th><th>Location</th><th>Basin</th><th class="n">Cloud</th><th class="n">Objects</th></tr>
+    {% for r in rows %}
+    <tr><td><a href="{{ url_for('image_detail', image_id=r.image_id) }}">{{ r.image_id }}</a></td>
+        <td>{{ r.capture_time|dt }}</td><td>{{ r.satellite_name }} <span class="muted">· {{ r.sensor_name }} {{ r.spatial_resolution_m|num }} m</span></td>
+        <td>{{ r.location_name }} <span class="muted">· {{ r.country }}</span></td><td class="muted">{{ r.basin_name or '—' }}</td>
+        <td class="n">{{ r.cloud_cover|pct }}</td><td class="n">{{ r.objects }}</td></tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No images match these filters.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ loc.location_name }} · EO Knowledge Graph{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('locations') }}">← Locations</a></p>
+<h1>{{ loc.location_name }}</h1>
+<p class="sub">{{ loc.country }} · {{ loc.region_type }} · {{ loc.latitude }}, {{ loc.longitude }}
+  {% if loc.basin_name %} · {{ loc.basin_name }} ({{ loc.km_to_river|num }} km from river reference point){% endif %}</p>
+
+<div class="grid g2">
+  <div class="panel">
+    <h2>Tree cover over time</h2>
+    {% if timeline %}<canvas id="chart" height="190"></canvas>{% else %}<p class="muted">No tree-coverage detections at this location.</p>{% endif %}
+  </div>
+  <div class="panel">
+    <h2>EVOLVED_FROM lineage</h2>
+    <p class="muted" style="margin-top:-6px">The same forest patch tracked across images (object IDs, newest last).</p>
+    {% if timeline %}
+    <p class="mono">{% for t in timeline %}{{ t.object_id }}{{ ' → ' if not loop.last }}{% endfor %}</p>
+    {% endif %}
+    <table>
+      <tr><th>To date</th><th>Change</th><th class="n">Loss</th><th class="n">%/month</th><th>Alert</th></tr>
+      {% for c in changes %}
+      <tr><td>{{ c.curr_time|dt }}</td><td><span class="chip {{ c.change_type }}">{{ c.change_type }}</span></td>
+          <td class="n">{{ c.change_pct|loss(2) }}</td><td class="n">{{ c.rate_pct_per_month|num(2) }}</td>
+          <td>{{ ('#' ~ c.alert_id) if c.alert_id else '—' }}</td></tr>
+      {% else %}<tr><td colspan="5" class="muted">No lineage yet. Run the change analysis on the Alerts page.</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+
+<div class="panel scroll">
+  <h2>Images of this location</h2>
+  <table><tr><th>ID</th><th>Captured</th><th>Satellite</th><th class="n">Cloud</th><th class="n">Objects</th></tr>
+    {% for i in images %}<tr><td><a href="{{ url_for('image_detail', image_id=i.image_id) }}">{{ i.image_id }}</a></td><td>{{ i.capture_time|dt }}</td>
+      <td>{{ i.satellite_name }}</td><td class="n">{{ i.cloud_cover|pct }}</td><td class="n">{{ i.objects }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}
+{% block scripts %}
+{% if timeline %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+var C = {{ chart|tojson }};
+if (window.Chart) new Chart(document.getElementById('chart'), {
+  data: { labels: C.labels, datasets: [
+    { type: 'line', label: 'Tree area (km²)', data: C.area, borderColor: '#127a65', backgroundColor: '#127a65', yAxisID: 'y', tension: .25 },
+    { type: 'line', label: 'Mean NDVI', data: C.ndvi, borderColor: '#d97706', backgroundColor: '#d97706', borderDash: [5, 4], yAxisID: 'y2', tension: .25 } ] },
+  options: { responsive: true, interaction: { mode: 'index', intersect: false },
+    scales: { y: { title: { display: true, text: 'km²' } }, y2: { position: 'right', min: 0, max: 1, grid: { drawOnChartArea: false }, title: { display: true, text: 'NDVI' } } } }
+});
+</script>
+{% endif %}
+{% endblock %}

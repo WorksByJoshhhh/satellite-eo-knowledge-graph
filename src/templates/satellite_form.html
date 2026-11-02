@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if editing else 'New' }} satellite · EO Knowledge Graph{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('satellites') }}">← Satellites</a></p>
+<h1>{{ ('Edit ' ~ editing.satellite_name) if editing else 'New satellite' }}</h1>
+<p class="sub">Duplicate names are rejected by the UNIQUE constraint; dates and ranges are checked by the app and by CHECK constraints.</p>
+<div class="panel" style="max-width:720px">
+  <form method="post" novalidate>
+    <div class="form-grid">
+      <div class="field"><label>Satellite name</label><input name="satellite_name" value="{{ form.satellite_name or '' }}" maxlength="60"></div>
+      <div class="field"><label>Operator</label><input name="operator_name" value="{{ form.operator_name or '' }}" maxlength="60"></div>
+      <div class="field"><label>Launch date</label><input type="date" name="launch_date" value="{{ form.launch_date or '' }}"></div>
+      <div class="field"><label>Revisit days (optional)</label><input name="revisit_days" value="{{ form.revisit_days or '' }}"></div>
+      <div class="field"><label>Orbit type</label>
+        <select name="orbit_type">{% for o in orbits %}<option {{ 'selected' if form.orbit_type == o }}>{{ o }}</option>{% endfor %}</select></div>
+      <div class="field"><label>Status</label>
+        <select name="sat_status">{% for s in statuses %}<option {{ 'selected' if form.sat_status == s }}>{{ s }}</option>{% endfor %}</select></div>
+    </div>
+    <button class="btn">{{ 'Save changes' if editing else 'Create satellite' }}</button>
+  </form>
+</div>
+{% endblock %}
