@@ -20,7 +20,7 @@ A Flask web application exposes nine end-to-end features. PL/SQL packages and tr
 | Nallazhahu M | 25BCE5203 |
 | Akshay V | 25BCE5116 |
 
-**Demo video (YouTube, unlisted):** https://youtu.be/2usdhUZrZ2Q · **Report:** `report/DBMS_Project_Report.pdf` · **Slides:** `presentation/DBMS_Project_Presentation.pptx`
+**GitHub:** https://github.com/WorksByJoshhhh/satellite-eo-knowledge-graph · **Demo video (YouTube, unlisted):** https://youtu.be/2usdhUZrZ2Q · **Report:** `report/DBMS_Project_Report.pdf` · **Slides:** `presentation/DBMS_Project_Presentation.pptx`
 
 ## Features (all connected to the database)
 | # | Feature | Database work behind it |
@@ -148,3 +148,6 @@ Constraints include PRIMARY KEY, FOREIGN KEY (CASCADE / SET NULL), UNIQUE, NOT N
 
 ## References
 See `report/DBMS_Project_Report.pdf` (IEEE style). Principal references: Oracle Database 21c PL/SQL Language Reference; python-oracledb documentation; Flask documentation; Neo4j Cypher Manual (vector and point indexes); Copernicus Sentinel-2 mission documentation; Global Forest Watch.
+
+## License
+MIT License, see `LICENSE`.
