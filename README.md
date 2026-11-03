@@ -20,7 +20,7 @@ A Flask web application exposes nine end-to-end features. PL/SQL packages and tr
 | Nallazhahu M | 25BCE5203 |
 | Akshay V | 25BCE5116 |
 
-**GitHub:** https://github.com/WorksByJoshhhh/satellite-eo-knowledge-graph · **Demo video (YouTube, unlisted):** https://youtu.be/2usdhUZrZ2Q · **Report:** `report/DBMS_Project_Report.pdf` · **Slides:** `presentation/DBMS_Project_Presentation.pptx`
+**GitHub:** https://github.com/WorksByJoshhhh/satellite-eo-knowledge-graph · **Demo video (YouTube, unlisted):** https://youtu.be/cpiuBBuMgBk · **Report:** `report/DBMS_Project_Report.pdf` · **Slides:** `presentation/DBMS_Project_Presentation.pptx`
 
 ## Features (all connected to the database)
 | # | Feature | Database work behind it |
